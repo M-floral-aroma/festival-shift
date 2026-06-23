@@ -178,13 +178,13 @@
     <div class="form-row full">
       <div>
         <label>名前</label>
-        <input type="text" id="inp-name" placeholder="例：晴海花子">
+        <input type="text" id="inp-name" placeholder="例：田中さくら">
       </div>
     </div>
 
     <label style="margin-bottom:6px;">区分</label>
     <div class="age-selector">
-      <button class="age-btn sel-adult" id="age-adult" onclick="selectAge('adult')">👨👩 大人</button>
+      <button class="age-btn sel-adult" id="age-adult" onclick="selectAge('adult')">👨 大人</button>
       <button class="age-btn" id="age-junior" onclick="selectAge('junior')">🧑 中学生</button>
       <button class="age-btn" id="age-elem" onclick="selectAge('elem')">👦 小学生</button>
     </div>
@@ -470,19 +470,10 @@ function renderShift() {
         <div class="table-wrap"><table>
           <thead>
             <tr>
-              <th rowspan="2">時間帯</th>
-              <th colspan="2" style="color:var(--ball)">🎱 ${settings.stall1}</th>
-              <th colspan="2" style="color:var(--arch)">🎯 ${settings.stall2}</th>
-              <th colspan="2" style="color:var(--tbd)">❓ 未定</th>
-              <th rowspan="2">参加メンバー</th>
-            </tr>
-            <tr>
-              <th style="color:var(--ball)">合計</th>
-              <th style="color:var(--ball);font-size:.65rem">大人/中/小</th>
-              <th style="color:var(--arch)">合計</th>
-              <th style="color:var(--arch);font-size:.65rem">大人/中/小</th>
-              <th style="color:var(--tbd)">合計</th>
-              <th style="color:var(--tbd);font-size:.65rem">大人/中/小</th>
+              <th>時間帯</th>
+              <th style="color:var(--ball)">🎱 ${settings.stall1}</th>
+              <th style="color:var(--arch)">🎯 ${settings.stall2}</th>
+              <th style="color:var(--tbd)">❓ 未定</th>
             </tr>
           </thead>
           <tbody>
@@ -493,27 +484,29 @@ function renderShift() {
                 arch: inSlot.filter(m => m.stall==='arch'),
                 tbd:  inSlot.filter(m => m.stall==='tbd')
               };
-              const chips = arr => {
+              const cellContent = (arr, colorClass) => {
+                if (!arr.length) return '<span style="color:#ccc">—</span>';
                 const a = arr.filter(m=>(m.age||'adult')==='adult').length;
                 const j = arr.filter(m=>m.age==='junior').length;
                 const e = arr.filter(m=>m.age==='elem').length;
-                return (a||j||e)
-                  ? `${a?`<span class="count-chip chip-adult">${a}</span>`:''}${j?`<span class="count-chip chip-junior">${j}</span>`:''}${e?`<span class="count-chip chip-elem">${e}</span>`:''}`
-                  : '<span style="color:#ccc;font-size:.7rem">—</span>';
+                const chipsHtml =
+                  `${a?`<span class="count-chip chip-adult">${a}</span>`:''}${j?`<span class="count-chip chip-junior">${j}</span>`:''}${e?`<span class="count-chip chip-elem">${e}</span>`:''}`;
+                const pillsHtml = arr.map(m =>
+                  `<span class="pill pill-${m.stall}-${m.age||'adult'}">${m.name}</span>`
+                ).join('');
+                return `
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
+                    <span class="count-total ${colorClass}">${arr.length}</span>
+                    <div class="count-breakdown" style="margin-top:0;">${chipsHtml}</div>
+                  </div>
+                  <div class="names-cell" style="margin-top:4px;">${pillsHtml}</div>`;
               };
-              const pills = inSlot.map(m =>
-                `<span class="pill pill-${m.stall}-${m.age||'adult'}">${m.name}</span>`
-              ).join('');
               return `
                 <tr>
                   <td class="time-cell">${slot.start}〜${slot.end}</td>
-                  <td class="count-wrap"><span class="count-total count-ball-color">${byStall.ball.length||'—'}</span></td>
-                  <td><div class="count-breakdown">${chips(byStall.ball)}</div></td>
-                  <td class="count-wrap"><span class="count-total count-arch-color">${byStall.arch.length||'—'}</span></td>
-                  <td><div class="count-breakdown">${chips(byStall.arch)}</div></td>
-                  <td class="count-wrap"><span class="count-total count-tbd-color">${byStall.tbd.length||'—'}</span></td>
-                  <td><div class="count-breakdown">${chips(byStall.tbd)}</div></td>
-                  <td class="names-cell">${pills||'<span style="color:#ccc">-</span>'}</td>
+                  <td>${cellContent(byStall.ball,'count-ball-color')}</td>
+                  <td>${cellContent(byStall.arch,'count-arch-color')}</td>
+                  <td>${cellContent(byStall.tbd,'count-tbd-color')}</td>
                 </tr>`;
             }).join('')}
           </tbody>
