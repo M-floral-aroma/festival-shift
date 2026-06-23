@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>屋台シフト表</title>
+<title>お祭りシフト表</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
 
@@ -30,12 +30,7 @@
   header { background: var(--navy); padding: 18px 24px 14px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
   header h1 { font-size: 1.2rem; font-weight: 900; color: var(--yellow); letter-spacing: .04em; flex:1; }
   header .lantern { font-size: 1.5rem; }
-
-  .sync-btn {
-    background: none; border: 1.5px solid var(--yellow); color: var(--yellow);
-    border-radius: 6px; font-family: inherit; font-size: .75rem; font-weight: 700;
-    padding: 5px 10px; cursor: pointer; transition: .15s;
-  }
+  .sync-btn { background: none; border: 1.5px solid var(--yellow); color: var(--yellow); border-radius: 6px; font-family: inherit; font-size: .75rem; font-weight: 700; padding: 5px 10px; cursor: pointer; transition: .15s; }
   .sync-btn:hover { background: var(--yellow); color: var(--navy); }
 
   .tabs { display: flex; background: var(--light); border-bottom: 3px solid var(--navy); }
@@ -45,16 +40,9 @@
   .section { display: none; padding: 20px 16px; }
   .section.active { display: block; }
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--navy); color: #fff; padding: 10px 20px; border-radius: 20px;
-    font-size: .85rem; font-weight: 700; z-index: 999;
-    opacity: 0; transition: opacity .3s; pointer-events: none;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: .85rem; font-weight: 700; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; }
   .toast.show { opacity: 1; }
 
-  /* LOADING */
   .loading { text-align: center; padding: 30px; color: var(--gray); font-size: .9rem; }
   .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #ddd; border-top-color: var(--navy); border-radius: 50%; animation: spin .7s linear infinite; margin-right: 8px; vertical-align: middle; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -62,7 +50,7 @@
   .form-card { background: var(--paper); border: 2px solid var(--navy); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
   .form-card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  .form-row.full { grid-template-columns: 1fr; }
+  .form-row.full { grid-template-columns: 1fr; margin-bottom: 12px; }
   label { font-size: .78rem; font-weight: 700; color: var(--gray); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
   input[type="text"], input[type="time"], input[type="date"], select {
     width: 100%; padding: 10px 12px; border: 2px solid #D8D0C4; border-radius: 8px;
@@ -70,22 +58,41 @@
   }
   input:focus, select:focus { border-color: var(--navy); }
 
-  .age-selector { display: flex; gap: 8px; margin-bottom: 14px; }
+  .age-selector { display: flex; gap: 8px; margin-bottom: 16px; }
   .age-btn { flex: 1; padding: 10px 4px; border: 2px solid #D8D0C4; border-radius: 8px; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; background: #fff; color: var(--gray); transition: .15s; text-align: center; }
   .age-btn.sel-adult  { border-color: var(--adult);  background: var(--adult);  color: #fff; }
   .age-btn.sel-junior { border-color: var(--junior); background: var(--junior); color: #fff; }
   .age-btn.sel-elem   { border-color: var(--elem);   background: var(--elem);   color: #fff; }
 
-  .time-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; margin-bottom: 12px; }
+  /* 日程ブロック */
+  .day-block {
+    border: 2px solid #D8D0C4; border-radius: 10px; padding: 14px; margin-bottom: 12px;
+    background: #fff; transition: border-color .15s;
+  }
+  .day-block.active { border-color: var(--navy); }
+  .day-block.inactive { opacity: .45; }
+
+  .day-block-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px; cursor: pointer;
+  }
+  .day-check {
+    width: 22px; height: 22px; border: 2px solid #D8D0C4; border-radius: 6px;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; flex-shrink: 0; transition: .15s;
+  }
+  .day-check.checked { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .day-label { font-weight: 700; font-size: .95rem; }
+
+  .time-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
   .time-sep { font-weight: 700; color: var(--gray); text-align: center; }
 
-  .btn-add { width: 100%; padding: 13px; background: var(--red); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: opacity .15s; }
+  .btn-add { width: 100%; padding: 13px; background: var(--red); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; letter-spacing: .04em; transition: opacity .15s; margin-top: 4px; }
   .btn-add:hover { opacity: .85; }
   .btn-add:disabled { opacity: .5; cursor: not-allowed; }
 
   .member-item { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid #E0D9CF; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
   .member-info { flex: 1; min-width: 0; }
-  .member-name-row { display: flex; align-items: center; gap: 6px; }
+  .member-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .member-name { font-weight: 700; }
   .age-tag { font-size: .68rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; color: #fff; white-space: nowrap; }
   .age-tag-adult  { background: var(--adult); }
@@ -96,9 +103,10 @@
   .badge-ball { background: var(--ball); }
   .badge-arch { background: var(--arch); }
   .badge-tbd  { background: var(--tbd); }
-  .btn-del { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 1.1rem; padding: 2px 6px; }
+  .btn-del { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 1.1rem; padding: 2px 6px; flex-shrink: 0; }
   .btn-del:hover { color: var(--red); }
 
+  /* シフト表 */
   .day-section { margin-bottom: 32px; }
   .day-title { font-size: 1rem; font-weight: 900; color: var(--white); background: var(--navy); padding: 8px 14px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 8px; }
   .table-wrap { overflow-x: auto; }
@@ -143,13 +151,15 @@
   .btn-save { margin-top: 20px; width: 100%; padding: 13px; background: var(--orange); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity .15s; }
   .btn-save:hover { opacity: .85; }
   .saved-msg { text-align: center; color: var(--arch); font-weight: 700; margin-top: 12px; display: none; }
+
+  .divider { border: none; border-top: 1.5px solid #E0D9CF; margin: 16px 0; }
 </style>
 </head>
 <body>
 
 <header>
   <span class="lantern">🏮</span>
-  <h1>屋台シフト表</h1>
+  <h1>お祭りシフト表</h1>
   <button class="sync-btn" onclick="loadMembers()">🔄 更新</button>
 </header>
 
@@ -159,29 +169,26 @@
   <button class="tab" onclick="switchTab('settings', this)">⚙️ 設定</button>
 </div>
 
+<!-- 入力タブ -->
 <div id="tab-input" class="section active">
   <div class="form-card">
     <h2>🎪 参加情報を追加</h2>
+
     <div class="form-row full">
       <div>
         <label>名前</label>
-        <input type="text" id="inp-name" placeholder="例：晴海花子">
+        <input type="text" id="inp-name" placeholder="例：田中さくら">
       </div>
     </div>
+
     <label style="margin-bottom:6px;">区分</label>
     <div class="age-selector">
       <button class="age-btn sel-adult" id="age-adult" onclick="selectAge('adult')">👨 大人</button>
       <button class="age-btn" id="age-junior" onclick="selectAge('junior')">🧑 中学生</button>
       <button class="age-btn" id="age-elem" onclick="selectAge('elem')">👦 小学生</button>
     </div>
-    <div class="form-row">
-      <div>
-        <label>日程</label>
-        <select id="inp-day">
-          <option value="1">1日目</option>
-          <option value="2">2日目</option>
-        </select>
-      </div>
+
+    <div class="form-row full">
       <div>
         <label>担当屋台</label>
         <select id="inp-stall">
@@ -191,18 +198,43 @@
         </select>
       </div>
     </div>
-    <label style="margin-bottom:6px;">参加時間(準備12:00～,営業16:00～20：00)</label>
-    <div class="time-row">
-      <input type="time" id="inp-start" value="10:00" step="1800">
-      <div class="time-sep">〜</div>
-      <input type="time" id="inp-end" value="12:00" step="1800">
+
+    <hr class="divider">
+
+    <!-- 1日目 -->
+    <div class="day-block active" id="block-day1">
+      <div class="day-block-header" onclick="toggleDay(1)">
+        <div class="day-check checked" id="check-day1">✓</div>
+        <span class="day-label">🎆 1日目</span>
+      </div>
+      <div class="time-row" id="time-day1">
+        <input type="time" id="inp-start1" value="10:00">
+        <div class="time-sep">〜</div>
+        <input type="time" id="inp-end1" value="12:00">
+      </div>
     </div>
+
+    <!-- 2日目 -->
+    <div class="day-block active" id="block-day2">
+      <div class="day-block-header" onclick="toggleDay(2)">
+        <div class="day-check checked" id="check-day2">✓</div>
+        <span class="day-label">🎆 2日目</span>
+      </div>
+      <div class="time-row" id="time-day2">
+        <input type="time" id="inp-start2" value="10:00">
+        <div class="time-sep">〜</div>
+        <input type="time" id="inp-end2" value="12:00">
+      </div>
+    </div>
+
     <button class="btn-add" id="btn-add" onclick="addMember()">＋ 追加する</button>
   </div>
+
   <h2 style="font-size:.9rem;font-weight:700;margin-bottom:12px;">登録済みメンバー（<span id="member-count">0</span>名）</h2>
   <div id="member-list"><div class="loading"><span class="spinner"></span>読み込み中...</div></div>
 </div>
 
+<!-- シフトタブ -->
 <div id="tab-shift" class="section">
   <div class="legend-block">
     <div class="legend-title">■ 屋台（背景色）</div>
@@ -221,9 +253,10 @@
   <div id="shift-content"><div class="loading"><span class="spinner"></span>読み込み中...</div></div>
 </div>
 
+<!-- 設定タブ -->
 <div id="tab-settings" class="section">
   <div class="form-card">
-    <h2>⚙️ 屋台基本設定</h2>
+    <h2>⚙️ お祭り基本設定</h2>
     <div class="setting-row">
       <div><div class="setting-label">屋台①の名前</div></div>
       <input class="setting-input" id="set-stall1" value="スーパーボールすくい">
@@ -252,20 +285,21 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycby7T14faWh0pU_6yXpg_o3G
 
 let members = [];
 let selectedAge = 'adult';
+let dayChecked = { 1: true, 2: true };
+
 let settings = JSON.parse(localStorage.getItem('fm-settings') || 'null') || {
   stall1: 'スーパーボールすくい', stall2: '的当てアーチェリー', date1: '', date2: ''
 };
 
 const AGE_LABEL = { adult: '大人', junior: '中学生', elem: '小学生' };
 
-// ===== 初期化 =====
 document.getElementById('set-stall1').value = settings.stall1;
 document.getElementById('set-stall2').value = settings.stall2;
 document.getElementById('set-date1').value  = settings.date1;
 document.getElementById('set-date2').value  = settings.date2;
 loadMembers();
 
-// ===== GAS通信: 全件取得 =====
+// ===== GAS: 全件取得 =====
 async function loadMembers() {
   try {
     const res  = await fetch(`${GAS_URL}?action=getAll`);
@@ -276,36 +310,46 @@ async function loadMembers() {
     renderShift();
   } catch(e) {
     showToast('⚠️ 読み込みに失敗しました');
-    document.getElementById('member-list').innerHTML = '<div class="empty-msg">データの読み込みに失敗しました。<br>🔄 更新ボタンを押してみてください。</div>';
+    document.getElementById('member-list').innerHTML =
+      '<div class="empty-msg">データの読み込みに失敗しました。<br>🔄 更新ボタンを押してみてください。</div>';
   }
 }
 
-// ===== GAS通信: 追加 =====
+// ===== GAS: 追加（1日目・2日目それぞれ登録）=====
 async function addMember() {
   const name  = document.getElementById('inp-name').value.trim();
-  const day   = document.getElementById('inp-day').value;
   const stall = document.getElementById('inp-stall').value;
-  const start = document.getElementById('inp-start').value;
-  const end   = document.getElementById('inp-end').value;
 
-  if (!name)        { showToast('⚠️ 名前を入力してください'); return; }
-  if (!start||!end) { showToast('⚠️ 時間を入力してください'); return; }
-  if (start >= end) { showToast('⚠️ 終了時間は開始時間より後にしてください'); return; }
+  if (!name) { showToast('⚠️ 名前を入力してください'); return; }
+  if (!dayChecked[1] && !dayChecked[2]) { showToast('⚠️ 1日目か2日目を選んでください'); return; }
+
+  // 各日のバリデーション
+  const entries = [];
+  for (const day of [1, 2]) {
+    if (!dayChecked[day]) continue;
+    const start = document.getElementById(`inp-start${day}`).value;
+    const end   = document.getElementById(`inp-end${day}`).value;
+    if (!start || !end)  { showToast(`⚠️ ${day}日目の時間を入力してください`); return; }
+    if (start >= end)    { showToast(`⚠️ ${day}日目の終了時間は開始時間より後にしてください`); return; }
+    entries.push({ day: String(day), start, end });
+  }
 
   const btn = document.getElementById('btn-add');
   btn.disabled = true;
   btn.textContent = '送信中...';
 
   try {
-    const res  = await fetch(GAS_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'add', name, age: selectedAge, day, stall, start, end })
-    });
-    const json = await res.json();
-    if (json.status !== 'ok') throw new Error(json.message);
-
+    // 選択した日数分を順番に登録
+    for (const entry of entries) {
+      const res  = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'add', name, age: selectedAge, stall, ...entry })
+      });
+      const json = await res.json();
+      if (json.status !== 'ok') throw new Error(json.message);
+    }
     document.getElementById('inp-name').value = '';
-    showToast('✅ 追加しました！');
+    showToast(`✅ ${entries.length}件追加しました！`);
     await loadMembers();
   } catch(e) {
     showToast('⚠️ 追加に失敗しました');
@@ -315,7 +359,7 @@ async function addMember() {
   }
 }
 
-// ===== GAS通信: 削除 =====
+// ===== GAS: 削除 =====
 async function deleteMember(id) {
   if (!confirm('このメンバーを削除しますか？')) return;
   try {
@@ -326,6 +370,23 @@ async function deleteMember(id) {
     await loadMembers();
   } catch(e) {
     showToast('⚠️ 削除に失敗しました');
+  }
+}
+
+// ===== 日程チェック切替 =====
+function toggleDay(day) {
+  dayChecked[day] = !dayChecked[day];
+  const check = document.getElementById(`check-day${day}`);
+  const block = document.getElementById(`block-day${day}`);
+  const timeEl = document.getElementById(`time-day${day}`);
+  if (dayChecked[day]) {
+    check.classList.add('checked'); check.textContent = '✓';
+    block.classList.remove('inactive'); block.classList.add('active');
+    timeEl.querySelectorAll('input').forEach(i => i.disabled = false);
+  } else {
+    check.classList.remove('checked'); check.textContent = '';
+    block.classList.remove('active'); block.classList.add('inactive');
+    timeEl.querySelectorAll('input').forEach(i => i.disabled = true);
   }
 }
 
@@ -346,7 +407,6 @@ function selectAge(age) {
   });
 }
 
-// ===== 屋台ラベル =====
 function stallLabel(s) {
   if (s === 'ball') return settings.stall1;
   if (s === 'arch') return settings.stall2;
@@ -359,17 +419,28 @@ function renderMemberList() {
   document.getElementById('member-count').textContent = members.length;
   if (!members.length) { el.innerHTML = '<div class="empty-msg">まだ追加されていません</div>'; return; }
 
-  el.innerHTML = members.map(m => `
+  // 名前でグループ化して表示
+  const grouped = {};
+  members.forEach(m => {
+    const key = m.name + '_' + (m.age||'adult') + '_' + m.stall;
+    if (!grouped[key]) grouped[key] = { ...m, days: [] };
+    grouped[key].days.push({ id: m.id, day: m.day, start: m.start, end: m.end });
+  });
+
+  el.innerHTML = Object.values(grouped).map(g => `
     <div class="member-item">
       <div class="member-info">
         <div class="member-name-row">
-          <span class="member-name">${m.name}</span>
-          <span class="age-tag age-tag-${m.age||'adult'}">${AGE_LABEL[m.age||'adult']}</span>
+          <span class="member-name">${g.name}</span>
+          <span class="age-tag age-tag-${g.age||'adult'}">${AGE_LABEL[g.age||'adult']}</span>
         </div>
-        <div class="member-meta">${m.day === '1' ? '1日目' : '2日目'} &nbsp; ${m.start}〜${m.end}</div>
+        ${g.days.map(d => `
+          <div class="member-meta">${d.day}日目 &nbsp; ${d.start}〜${d.end}
+            <button class="btn-del" style="font-size:.8rem;padding:0 4px;" onclick="deleteMember('${d.id}')">✕</button>
+          </div>
+        `).join('')}
       </div>
-      <span class="member-badge badge-${m.stall}">${stallLabel(m.stall)}</span>
-      <button class="btn-del" onclick="deleteMember('${m.id}')">✕</button>
+      <span class="member-badge badge-${g.stall}">${stallLabel(g.stall)}</span>
     </div>
   `).join('');
 }
