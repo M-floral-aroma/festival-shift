@@ -467,13 +467,13 @@ function renderShift() {
     html += `
       <div class="day-section">
         <div class="day-title">🎆 ${day}日目 ${dateLabel}</div>
-        <div class="table-wrap"><table>
+        <div class="table-wrap"><table style="table-layout:fixed;width:100%;">
           <thead>
             <tr>
-              <th>時間帯</th>
-              <th style="color:var(--ball)">🎱 ${settings.stall1}</th>
-              <th style="color:var(--arch)">🎯 ${settings.stall2}</th>
-              <th style="color:var(--tbd)">❓ 未定</th>
+              <th style="width:22%">時間帯</th>
+              <th style="width:26%;color:var(--ball)">🎱 ${settings.stall1}</th>
+              <th style="width:26%;color:var(--arch)">🎯 ${settings.stall2}</th>
+              <th style="width:26%;color:var(--tbd)">❓ 未定</th>
             </tr>
           </thead>
           <tbody>
